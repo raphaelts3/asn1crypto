@@ -552,6 +552,38 @@ class X509Tests(unittest.TestCase):
         cert = self._load_cert('chromium/punycodetest.pem')
         self.assertEqual('xn--wgv71a119e.com', cert['tbs_certificate']['subject'].native['common_name'])
 
+    def test_android_v2_cert(self):
+        cert = self._load_cert('android/v2.x509')
+        self.assertEqual('Android Keystore Key', cert['tbs_certificate']['subject'].native['common_name'])
+        self.assertEqual(
+            'Keymaster version 2.0', 
+            cert['tbs_certificate']['extensions'][1].native["extn_value"]["attestation_version"]
+        )
+
+    def test_android_v3_cert(self):
+        cert = self._load_cert('android/v3.x509')
+        self.assertEqual('Android Keystore Key', cert['tbs_certificate']['subject'].native['common_name'])
+        self.assertEqual(
+            'Keymaster version 3.0', 
+            cert['tbs_certificate']['extensions'][1].native["extn_value"]["attestation_version"]
+        )
+
+    def test_android_v4_cert(self):
+        cert = self._load_cert('android/v4.x509')
+        self.assertEqual('Android Keystore Key', cert['tbs_certificate']['subject'].native['common_name'])
+        self.assertEqual(
+            'Keymaster version 4.0', 
+            cert['tbs_certificate']['extensions'][1].native["extn_value"]["attestation_version"]
+        )
+
+    def test_android_mint_v1_cert(self):
+        cert = self._load_cert('android/mint-v1.x509')
+        self.assertEqual('Android Keystore Key', cert['tbs_certificate']['subject'].native['common_name'])
+        self.assertEqual(
+            'KeyMint version 1.0', 
+            cert['tbs_certificate']['extensions'][1].native["extn_value"]["attestation_version"]
+        )
+
     @staticmethod
     def signature_algo_info():
         return (
