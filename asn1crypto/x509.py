@@ -1825,6 +1825,8 @@ class AttestationVersion(Integer):
         4: 'Keymaster version 4.1',
         100: 'KeyMint version 1.0',
         200: 'KeyMint version 2.0',
+        300: 'KeyMint version 3.0',
+        400: 'KeyMint version 4.0',
     }
 
 
@@ -1838,6 +1840,8 @@ class KeyMasterVersion(Integer):
         41: 'Keymaster version 4.1',
         100: 'KeyMint version 1.0',
         200: 'KeyMint version 2.0',
+        300: 'KeyMint version 3.0',
+        400: 'KeyMint version 4.0',
     }
 
 
@@ -1921,6 +1925,21 @@ class DigestType(Integer):
 
 class SetOfDigests(SetOf):
     _child_spec = DigestType
+
+
+class SetOfBlock(SetOf):
+    _child_spec = Integer
+
+
+class ModuleType(Sequence):
+    _fields = [
+        ('package_name', OctetString),
+        ('version', Integer)
+    ]
+
+
+class SetOfModule(SetOf):
+    _child_spec = ModuleType
 
 
 class EllipticCurveType(Integer):
@@ -2047,7 +2066,7 @@ class RootOfTrust(Sequence):
         ('verified_boot_key', OctetString),
         ('device_locked', Boolean),
         ('verified_boot_state', VerifiedBootState),
-        ('verified_boot_hash', OctetString),
+        ('verified_boot_hash', OctetString, {'optional': True}),
     ]
 
 
@@ -2056,17 +2075,21 @@ class AuthorizationList(Sequence):
         ('purpose', SetOfPurposes, {'explicit': 1, 'optional': True}),
         ('algorithm', AlgorithmType, {'explicit': 2, 'optional': True}),
         ('key_size', Integer, {'explicit': 3, 'optional': True}),
+        ('block_mode', SetOfBlock, {'explicit': 4, 'optional': True}),
         ('digest', SetOfDigests, {'explicit': 5, 'optional': True}),
         ('padding', SetOfPadding, {'explicit': 6, 'optional': True}),
+        ('caller_nonce', StatusSet, {'explicit': 7, 'optional': True}),
+        ('min_mac_length', Integer, {'explicit': 8, 'optional': True}),
         ('ec_curve', EllipticCurveType, {'explicit': 10, 'optional': True}),
         ('rsa_public_exponent', Integer, {'explicit': 200, 'optional': True}),
-        ('mfg_digest', SetOfInteger, {'explicit': 203, 'optional': True}),
+        ('mgf_digest', SetOfInteger, {'explicit': 203, 'optional': True}),
         ('rollback_resistance', StatusSet, {'explicit': 303, 'optional': True}),
         ('early_boot_only', StatusSet, {'explicit': 305, 'optional': True}),
         ('active_date_time', UnixTimestamp, {'explicit': 400, 'optional': True}),
         ('origination_expire_date_time', UnixTimestamp, {'explicit': 401, 'optional': True}),
         ('usage_expire_date_time', UnixTimestamp, {'explicit': 402, 'optional': True}),
         ('usage_count_limit', Integer, {'explicit': 405, 'optional': True}),
+        ('user_secure_id', Integer, {'explicit': 502, 'optional': True}),
         ('no_auth_required', StatusSet, {'explicit': 503, 'optional': True}),
         ('user_auth_type', UserAuthenticationType, {'explicit': 504, 'optional': True}),
         ('auth_timeout', Integer, {'explicit': 505, 'optional': True}),
@@ -2094,6 +2117,8 @@ class AuthorizationList(Sequence):
         ('vendor_patch_level', Integer, {'explicit': 718, 'optional': True}),
         ('boot_patch_level', Integer, {'explicit': 719, 'optional': True}),
         ('device_unique_attestation', StatusSet, {'explicit': 720, 'optional': True}),
+        ('attestation_id_second_imei', OctetString, {'explicit': 723, 'optional': True}),
+        ('module_hash', OctetString, {'explicit': 724, 'optional': True}),
     ]
 
 
@@ -2107,6 +2132,7 @@ class Attestation(Sequence):
         ('unique_id', OctetString),
         ('software_enforced', AuthorizationList),
         ('tee_enforced', AuthorizationList),
+        ('modules', SetOfModule, {'optional': True}),
     ]
 
 
